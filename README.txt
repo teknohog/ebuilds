@@ -8,5 +8,6 @@ media-video/rtmpdump-yle-1.4.6 from http://users.tkk.fi/~aajanki/rtmpdump-yle/
 
 media-video/yle-dl-1.99.9 from http://users.tkk.fi/~aajanki/rtmpdump-yle/
 
-net-p2p/imule-1.4.7.1 from http://echelon.i2p/imule/
-(USE=daemon does not work at the moment)
+net-p2p/imule-2.3.1.2 from http://echelon.i2p/imule/
+(The USEs daemon and remote do not work at the moment. You can use xpra to
+get a similar effect with local and remote connections.)
