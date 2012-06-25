@@ -6,7 +6,7 @@ Patched for Linux 3.4. Faster than 12.x drivers in Bitcoin mining.
 
 media-video/rtmpdump-yle-1.4.6 from http://users.tkk.fi/~aajanki/rtmpdump-yle/
 
-media-video/yle-dl-1.99.9 from http://users.tkk.fi/~aajanki/rtmpdump-yle/
+media-video/yle-dl-2.0.0 from http://users.tkk.fi/~aajanki/rtmpdump-yle/
 
 net-p2p/imule-2.3.1.2 from http://echelon.i2p/imule/
 (The USEs daemon and remote do not work at the moment. You can use xpra to
