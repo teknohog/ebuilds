@@ -2,7 +2,8 @@ Ebuilds by teknohog
 -------------------
 
 x11-drivers/ati-drivers-11.12-r3
-Patched for Linux 3.4 and 3.5. Faster than 12.x drivers in Bitcoin mining.
+Patched for Linux 3.4 and later. Faster than 12.x drivers in Bitcoin
+mining, at least on HD5xxx GPUs.
 
 media-video/rtmpdump-yle-1.4.6 from http://users.tkk.fi/~aajanki/rtmpdump-yle/
 
