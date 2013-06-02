@@ -9,7 +9,7 @@ media-video/rtmpdump-yle-1.4.6 from http://users.tkk.fi/~aajanki/rtmpdump-yle/
 
 media-video/yle-dl-2.1.0 from http://aajanki.github.io/yle-dl/
 
-net-p2p/imule-2.3.2.2 from http://echelon.i2p/imule/
+net-p2p/imule-2.3.2.3 from http://echelon.i2p/imule/
 
 
 iMule notes
@@ -26,5 +26,6 @@ several ways around this:
   port number in the client first, because by default it would clash with
   aMule.  The client can be running in xpra, Xvfb or plain X.
 
-
-
+Note: when you start a new version of the graphical client for the first
+time, there is a confirmation dialog, so do not start it anywhere out of
+sight.
