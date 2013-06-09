@@ -15,8 +15,8 @@ net-p2p/imule-2.3.2.3 from http://echelon.i2p/imule/
 iMule notes
 -----------
 
-The daemon mode does not work at the moment. However, there are
-several ways around this:
+The daemon mode may not work at the moment. However, there are several ways
+around this:
 
 * Use xpra, the "screen for X". Start the client on one machine, and
   you can attach to that window remotely.
