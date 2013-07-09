@@ -1,0 +1,68 @@
+Binary files primecoin-old/.git/index and primecoin-new/.git/index differ
+diff -Nr -U1 primecoin-old/src/main.cpp primecoin-new/src/main.cpp
+--- primecoin-old/src/main.cpp  2013-07-09 15:42:09.386735930 +0100
++++ primecoin-new/src/main.cpp  2013-07-09 16:00:21.617092110 +0100
+@@ -4609,4 +4609,7 @@
+         Primorial(nPrimorialHashFactor, bnHashFactor);
+-        while ((pblock->GetHeaderHash() < hashBlockHeaderLimit || CBigNum(pblock->GetHeaderHash()) % bnHashFactor != 0) && pblock->nNonce < 0xffff0000)
+-            pblock->nNonce++;
++       uint256 phash = pblock->GetHeaderHash();
++        while ((phash < hashBlockHeaderLimit || CBigNum(phash) % bnHashFactor != 0) && pblock->nNonce < 0xffff0000) {
++           pblock->nNonce++;
++           phash = pblock->GetHeaderHash();
++       }
+         if (pblock->nNonce >= 0xffff0000)
+@@ -4639,3 +4642,3 @@
+
+-            CBigNum bnMultiplierMin = bnPrimeMin * bnHashFactor / CBigNum(pblock->GetHeaderHash()) + 1;
++            CBigNum bnMultiplierMin = bnPrimeMin * bnHashFactor / CBigNum(phash) + 1;
+             while (bnPrimorial < bnMultiplierMin)
+@@ -4650,3 +4653,3 @@
+             unsigned int nProbableChainLength;
+-            if (MineProbablePrimeChain(*pblock, bnFixedMultiplier, fNewBlock, nTriedMultiplier, nProbableChainLength, nTests, nPrimesHit))
++            if (MineProbablePrimeChain(*pblock, bnFixedMultiplier, fNewBlock, nTriedMultiplier, nProbableChainLength, nTests, nPrimesHit, phash))
+             {
+diff -Nr -U1 primecoin-old/src/makefile.unix primecoin-new/src/makefile.unix
+--- primecoin-old/src/makefile.unix     2013-07-09 15:42:09.390069265 +0100
++++ primecoin-new/src/makefile.unix     2013-07-09 16:05:11.093853175 +0100
+@@ -8,3 +8,3 @@
+ # :=- --> No UPnP support - miniupnp not required
+-USE_UPNP:=0
++USE_UPNP:=1
+
+@@ -106,3 +106,4 @@
+ # adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
+-xCXXFLAGS=-O2 -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
++xCXXFLAGS=-O3 -march=native -fomit-frame-pointer -mfpmath=sse -Ofast -funroll-loops \
++    -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
+     $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
+diff -Nr -U1 primecoin-old/src/prime.cpp primecoin-new/src/prime.cpp
+--- primecoin-old/src/prime.cpp 2013-07-09 15:42:09.390069265 +0100
++++ primecoin-new/src/prime.cpp 2013-07-09 16:02:22.720464935 +0100
+@@ -341,3 +341,3 @@
+ // Mine probable prime chain of form: n = h * p# +/- 1
+-bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNewBlock, unsigned int& nTriedMultiplier, unsigned int& nProbableChainLength, unsigned int& nTests, unsigned int& nPrimesHit)
++bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNewBlock, unsigned int& nTriedMultiplier, unsigned int& nProbableChainLength, unsigned int& nTests, unsigned int& nPrimesHit, uint256& headerhash)
+ {
+@@ -359,3 +359,3 @@
+         nStart = GetTimeMicros();
+-        psieve.reset(new CSieveOfEratosthenes(nMaxSieveSize, block.nBits, block.GetHeaderHash(), bnFixedMultiplier));
++        psieve.reset(new CSieveOfEratosthenes(nMaxSieveSize, block.nBits, headerhash, bnFixedMultiplier));
+         while (psieve->Weave());
+@@ -379,3 +379,3 @@
+         }
+-        bnChainOrigin = CBigNum(block.GetHeaderHash()) * bnFixedMultiplier * nTriedMultiplier;
++        bnChainOrigin = CBigNum(headerhash) * bnFixedMultiplier * nTriedMultiplier;
+         unsigned int nChainLengthCunningham1 = 0;
+diff -Nr -U1 primecoin-old/src/prime.h primecoin-new/src/prime.h
+--- primecoin-old/src/prime.h   2013-07-09 15:42:09.390069265 +0100
++++ primecoin-new/src/prime.h   2013-07-09 16:08:53.507259038 +0100
+@@ -9,3 +9,3 @@
+
+-static const unsigned int nMaxSieveSize = 1000000u;
++static const unsigned int nMaxSieveSize = 500000u;
+ static const uint256 hashBlockHeaderLimit = (uint256(1) << 255);
+@@ -59,3 +59,3 @@
+ // Mine probable prime chain of form: n = h * p# +/- 1
+-bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNewBlock, unsigned int& nTriedMultiplier, unsigned int& nProbableChainLength, unsigned int& nTests, unsigned int& nPrimesHit);
++bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNewBlock, unsigned int& nTriedMultiplier, unsigned int& nProbableChainLength, unsigned int& nTests, unsigned int& nPrimesHit, uint256& headerhash);
