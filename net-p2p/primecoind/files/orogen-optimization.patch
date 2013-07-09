@@ -22,20 +22,6 @@ diff -Nr -U1 primecoin-old/src/main.cpp primecoin-new/src/main.cpp
 -            if (MineProbablePrimeChain(*pblock, bnFixedMultiplier, fNewBlock, nTriedMultiplier, nProbableChainLength, nTests, nPrimesHit))
 +            if (MineProbablePrimeChain(*pblock, bnFixedMultiplier, fNewBlock, nTriedMultiplier, nProbableChainLength, nTests, nPrimesHit, phash))
              {
-diff -Nr -U1 primecoin-old/src/makefile.unix primecoin-new/src/makefile.unix
---- primecoin-old/src/makefile.unix     2013-07-09 15:42:09.390069265 +0100
-+++ primecoin-new/src/makefile.unix     2013-07-09 16:05:11.093853175 +0100
-@@ -8,3 +8,3 @@
- # :=- --> No UPnP support - miniupnp not required
--USE_UPNP:=0
-+USE_UPNP:=1
-
-@@ -106,3 +106,4 @@
- # adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
--xCXXFLAGS=-O2 -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
-+xCXXFLAGS=-O3 -march=native -fomit-frame-pointer -mfpmath=sse -Ofast -funroll-loops \
-+    -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
-     $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
 diff -Nr -U1 primecoin-old/src/prime.cpp primecoin-new/src/prime.cpp
 --- primecoin-old/src/prime.cpp 2013-07-09 15:42:09.390069265 +0100
 +++ primecoin-new/src/prime.cpp 2013-07-09 16:02:22.720464935 +0100
