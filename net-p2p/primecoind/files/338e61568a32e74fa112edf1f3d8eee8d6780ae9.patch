@@ -1,0 +1,69 @@
+From 338e61568a32e74fa112edf1f3d8eee8d6780ae9 Mon Sep 17 00:00:00 2001
+From: Sunny King <sunnyking9999@gmail.com>
+Date: Wed, 10 Jul 2013 17:16:44 +0100
+Subject: [PATCH] Primecoin: Limit sieve round time to 3 seconds max
+
+---
+ src/prime.cpp | 14 ++++++++++----
+ src/prime.h   |  3 +++
+ 2 files changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/src/prime.cpp b/src/prime.cpp
+index b58388f..3a278d0 100644
+--- a/src/prime.cpp
++++ b/src/prime.cpp
+@@ -6,11 +6,10 @@
+ 
+ // Prime Table
+ std::vector<unsigned int> vPrimes;
+-
++static const unsigned int nPrimeTableLimit = nMaxSieveSize;
+ 
+ void GeneratePrimeTable()
+ {
+-    static const unsigned int nPrimeTableLimit = nMaxSieveSize;
+     vPrimes.clear();
+     // Generate prime table using sieve of Eratosthenes
+     std::vector<bool> vfComposite (nPrimeTableLimit, false);
+@@ -358,8 +357,8 @@ bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNe
+         // Build sieve
+         nStart = GetTimeMicros();
+         psieve.reset(new CSieveOfEratosthenes(nMaxSieveSize, block.nBits, block.GetHeaderHash(), bnFixedMultiplier));
+-        while (psieve->Weave());
+-        printf("MineProbablePrimeChain() : new sieve (%u/%u) ready in %uus\n", psieve->GetCandidateCount(), nMaxSieveSize, (unsigned int) (GetTimeMicros() - nStart));
++        while (psieve->Weave() && (GetTimeMicros() - nStart < 3000000));
++        printf("MineProbablePrimeChain() : new sieve (%u/%u@%u%%) ready in %uus\n", psieve->GetCandidateCount(), nMaxSieveSize, psieve->GetProgressPercentage(), (unsigned int) (GetTimeMicros() - nStart));
+     }
+ 
+     CBigNum bnChainOrigin;
+@@ -505,6 +504,13 @@ unsigned int EstimateWorkTransition(unsigned int nPrevWorkTransition, unsigned i
+     return strprintf("%s%s", (nChainType==PRIME_CHAIN_CUNNINGHAM1)? "1CC" : ((nChainType==PRIME_CHAIN_CUNNINGHAM2)? "2CC" : "TWN"), TargetToString(nChainLength).c_str());
+ }
+ 
++
++// Get progress percentage of the sieve
++unsigned int CSieveOfEratosthenes::GetProgressPercentage()
++{
++    return std::min(100u, (((nPrimeSeq >= vPrimes.size())? nPrimeTableLimit : vPrimes[nPrimeSeq]) * 100 / nSieveSize));
++}
++
+ // Weave sieve for the next prime in table
+ // Return values:
+ //   True  - weaved another prime; nComposite - number of composites removed
+diff --git a/src/prime.h b/src/prime.h
+index 4729c39..a46281c 100644
+--- a/src/prime.h
++++ b/src/prime.h
+@@ -143,6 +143,9 @@ class CSieveOfEratosthenes
+         }
+     }
+ 
++    // Get progress percentage of the sieve
++    unsigned int GetProgressPercentage();
++
+     // Weave the sieve for the next prime in table
+     // Return values:
+     //   True  - weaved another prime; nComposite - number of composites removed
+-- 
+1.8.1.6
+
