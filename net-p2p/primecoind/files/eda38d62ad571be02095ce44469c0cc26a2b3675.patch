@@ -1,0 +1,81 @@
+From eda38d62ad571be02095ce44469c0cc26a2b3675 Mon Sep 17 00:00:00 2001
+From: Sunny King <sunnyking9999@gmail.com>
+Date: Wed, 10 Jul 2013 23:45:16 +0100
+Subject: [PATCH] Primecoin: Add gensieveroundlimitms config parameter         
+   Further limit sieve round to default 1 second            Check new block
+ arrival when preparing sieve (courtesy Mike270)
+
+---
+ src/main.cpp  | 9 ++++++---
+ src/prime.cpp | 9 ++++++---
+ 2 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index 801fe86..f56d37d 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -4435,7 +4435,8 @@ CBlockTemplate* CreateNewBlock(CReserveKey& reservekey)
+ 
+         nLastBlockTx = nBlockTx;
+         nLastBlockSize = nBlockSize;
+-        printf("CreateNewBlock(): total size %"PRI64u"\n", nBlockSize);
++        if (fDebug && GetBoolArg("-printmining"))
++            printf("CreateNewBlock(): total size %"PRI64u"\n", nBlockSize);
+         pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock);
+         pblock->vtx[0].vout[0].nValue = GetBlockValue(pblock->nBits, nFees);
+         pblocktemplate->vTxFees[0] = -nFees;
+@@ -4594,7 +4595,8 @@ void static BitcoinMiner(CWallet *pwallet)
+         CBlock *pblock = &pblocktemplate->block;
+         IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+ 
+-        printf("Running PrimecoinMiner with %"PRIszu" transactions in block (%u bytes)\n", pblock->vtx.size(),
++        if (fDebug && GetBoolArg("-printmining"))
++            printf("Running PrimecoinMiner with %"PRIszu" transactions in block (%u bytes)\n", pblock->vtx.size(),
+                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+ 
+         //
+@@ -4712,7 +4714,8 @@ void static BitcoinMiner(CWallet *pwallet)
+         nTimeExpected = nTimeExpected * max(1u, nRoundTests) / max(1u, nRoundPrimesHit);
+         for (unsigned int n = 1; n < TargetGetLength(pblock->nBits); n++)
+              nTimeExpected = nTimeExpected * max(1u, nRoundTests) * 3 / max(1u, nRoundPrimesHit);
+-        printf("PrimecoinMiner() : Round primorial=%u tests=%u primes=%u expected=%us\n", nPrimorialMultiplier, nRoundTests, nRoundPrimesHit, (unsigned int)(nTimeExpected/1000000));
++        if (fDebug && GetBoolArg("-printmining"))
++            printf("PrimecoinMiner() : Round primorial=%u tests=%u primes=%u expected=%us\n", nPrimorialMultiplier, nRoundTests, nRoundPrimesHit, (unsigned int)(nTimeExpected/1000000));
+     } }
+     catch (boost::thread_interrupted)
+     {
+diff --git a/src/prime.cpp b/src/prime.cpp
+index 3a278d0..b15f314 100644
+--- a/src/prime.cpp
++++ b/src/prime.cpp
+@@ -352,13 +352,16 @@ bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNe
+     fNewBlock = false;
+ 
+     int64 nStart, nCurrent; // microsecond timer
++    CBlockIndex* pindexPrev = pindexBest;
+     if (psieve.get() == NULL)
+     {
+         // Build sieve
+         nStart = GetTimeMicros();
+         psieve.reset(new CSieveOfEratosthenes(nMaxSieveSize, block.nBits, block.GetHeaderHash(), bnFixedMultiplier));
+-        while (psieve->Weave() && (GetTimeMicros() - nStart < 3000000));
+-        printf("MineProbablePrimeChain() : new sieve (%u/%u@%u%%) ready in %uus\n", psieve->GetCandidateCount(), nMaxSieveSize, psieve->GetProgressPercentage(), (unsigned int) (GetTimeMicros() - nStart));
++        int64 nSieveRoundLimit = (int)GetArg("-gensieveroundlimitms", 1000);
++        while (psieve->Weave() && pindexPrev == pindexBest && (GetTimeMicros() - nStart < 1000 * nSieveRoundLimit));
++        if (fDebug && GetBoolArg("-printmining"))
++            printf("MineProbablePrimeChain() : new sieve (%u/%u@%u%%) ready in %uus\n", psieve->GetCandidateCount(), nMaxSieveSize, psieve->GetProgressPercentage(), (unsigned int) (GetTimeMicros() - nStart));
+     }
+ 
+     CBigNum bnChainOrigin;
+@@ -366,7 +369,7 @@ bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNe
+     nStart = GetTimeMicros();
+     nCurrent = nStart;
+ 
+-    while (nCurrent - nStart < 10000 && nCurrent >= nStart)
++    while (nCurrent - nStart < 10000 && nCurrent >= nStart && pindexPrev == pindexBest)
+     {
+         nTests++;
+         if (!psieve->GetNextCandidateMultiplier(nTriedMultiplier))
+-- 
+1.8.1.6
+

@@ -11,7 +11,7 @@ media-video/yle-dl-2.1.0 from http://aajanki.github.io/yle-dl/
 
 net-p2p/imule-2.3.2.3 from http://echelon.i2p/imule/
 
-net-p2p/primecoind-0.1.0 from https://bitcointalk.org/index.php?topic=251850.0
+net-p2p/primecoind-0.1.0-r3 from http://primecoin.org/
 
 
 iMule notes
