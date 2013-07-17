@@ -13,6 +13,8 @@ net-p2p/imule-2.3.2.3 from http://echelon.i2p/imule/
 
 net-p2p/primecoind-0.1.0-r3 from http://primecoin.org/
 
+net-p2p/primecoind-hp-0.1.1.4 (actually 0.1.1-hp4) from http://sourceforge.net/projects/primecoin-hp/
+
 
 iMule notes
 -----------
