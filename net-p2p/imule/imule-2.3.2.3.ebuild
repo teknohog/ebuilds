@@ -19,6 +19,7 @@ KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
 IUSE="daemon irouter imulecmd webserver"
 
 DEPEND="x11-libs/wxGTK:2.8
+	dev-libs/crypto++
 	irouter? ( sys-devel/gcc[gcj] )
 	sys-devel/flex
 	sys-apps/texinfo"
