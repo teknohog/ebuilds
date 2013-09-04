@@ -15,6 +15,8 @@ net-p2p/primecoind-0.1.0-r3 from http://primecoin.org/
 
 net-p2p/primecoind-hp-0.1.1.5 (actually 0.1.1-hp5) from http://sourceforge.net/projects/primecoin-hp/
 
+sys-power/phc-intel-0.3.2.12.1-r6 patched for Linux 3.11
+
 
 iMule notes
 -----------
