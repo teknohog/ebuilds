@@ -7,7 +7,7 @@ some HD5xxx GPUs.
 
 media-video/rtmpdump-yle-1.4.6 from http://users.tkk.fi/~aajanki/rtmpdump-yle/
 
-media-video/yle-dl-2.1.0 from http://aajanki.github.io/yle-dl/
+media-video/yle-dl-2.1.1 from http://aajanki.github.io/yle-dl/
 
 net-p2p/imule-2.3.2.3 from http://echelon.i2p/imule/
 
