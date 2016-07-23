@@ -5,7 +5,7 @@ x11-drivers/ati-drivers-11.12-r3
 Patched for Linux 3.[456]. Faster than 12.x drivers in Bitcoin mining on
 some HD5xxx GPUs.
 
-media-video/yle-dl-2.10.1 from http://aajanki.github.io/yle-dl/
+media-video/yle-dl-2.10.2 from http://aajanki.github.io/yle-dl/
 
 net-p2p/imule-2.3.2.3 from http://echelon.i2p/imule/
 
