@@ -24,3 +24,5 @@ DEPEND="
 	media-video/rtmpdump"
 
 RDEPEND="${DEPEND}"
+
+S=${WORKDIR}/aajanki-yle-dl-da3cc03
